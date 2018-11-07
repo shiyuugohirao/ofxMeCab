@@ -17,3 +17,9 @@ Build Setting => Apple LLVM ver - Language => Prefix Header
 ![ofxMeCab](https://github.com/Akira-Hayasaka/ofxMeCab/raw/master/redmeimg/prefix.png)
  
 http://taku910.github.io/mecab/
+  
+
+## customize
+* 20181107  
+[add] getParsedScentence() without thread  
+一文(string)から形態素解析して区切られた一文(vector<string>)を返す関数を追加しました。
