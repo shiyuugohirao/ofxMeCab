@@ -17,15 +17,19 @@ void ofxMeCab::setDict(string absDicPath)
 {
     string arg = "-d " + absDicPath;
     mecab = mecab_new2(arg.c_str());
+    if(mecab==0) {
+        ofLogError("ofxMeCab")<<"failed to setDict";
+        std::exit(0);
+    }
     bSetDict = true;    
-    
-    startThread();
+
 }
 
 void ofxMeCab::parse(string jpTxt)
 {
     if (bSetDict)
     {
+        if(!isThreadRunning()) startThread();
         lock();
         jpTxtQ.push_back(jpTxt);
         unlock();
@@ -40,6 +44,23 @@ void ofxMeCab::exit()
 {
     waitForThread();
     mecab = NULL;
+}
+
+vector<string> ofxMeCab::getParsedScentence(string jpTxt)
+{
+    vector<string> output;
+    const mecab_node_t *node;
+    const char *buf = jpTxt.c_str();
+    node = mecab_sparse_tonode2(mecab, buf, jpTxt.size());
+    node = node->next;
+    for (; node->next != NULL; node = node->next)
+    {
+        MorphObj mo;
+        mo.hyousou = node->surface;
+        mo.hyousou = mo.hyousou.substr(0, node->length);
+        output.push_back(mo.hyousou);
+    }
+    return output;
 }
 
 void ofxMeCab::threadedFunction()
